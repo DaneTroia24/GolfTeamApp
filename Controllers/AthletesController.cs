@@ -217,7 +217,7 @@ namespace GolfTeamApp.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // Repopulate dropdowns if validation fails lol
+            // Repopulate dropdowns if validation fails
             if (User.IsInRole("Admin") || User.IsInRole("Coach"))
             {
                 ViewData["PartnerId"] = new SelectList(_context.Partners, "PartnerId", "Name", athlete.PartnerId);
