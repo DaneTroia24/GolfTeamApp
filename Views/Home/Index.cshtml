@@ -1,0 +1,59 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome to Golf Team App</h1>
+    <p>Special Olympics Golf Team Management System</p>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Athletes</h5>
+                <p class="card-text">View and manage athlete profiles, ratings, and information.</p>
+                <a asp-controller="Athletes" asp-action="Index" class="btn btn-primary">View Athletes</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Golf Events</h5>
+                <p class="card-text">Schedule and manage golf events and tournaments.</p>
+                <a asp-controller="GolfEvents" asp-action="Index" class="btn btn-success">View Events</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Scores</h5>
+                <p class="card-text">Enter and track golf scores for all events.</p>
+                <a asp-controller="EventScores" asp-action="Index" class="btn btn-info">View Scores</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Partners</h5>
+                <p class="card-text">Manage partner assignments and information.</p>
+                <a asp-controller="Partners" asp-action="Index" class="btn btn-warning">View Partners</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Coaches</h5>
+                <p class="card-text">Coach profiles and team management tools.</p>
+                <a asp-controller="Coaches" asp-action="Index" class="btn btn-secondary">View Coaches</a>
+            </div>
+        </div>
+    </div>
+</div>

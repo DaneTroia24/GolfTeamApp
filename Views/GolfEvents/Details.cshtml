@@ -1,0 +1,114 @@
+﻿@model GolfTeamApp.Models.GolfEvent
+
+@{
+    ViewData["Title"] = "Event Details";
+}
+
+<h1>Event Details</h1>
+
+<div class="card">
+    <div class="card-header">
+        <h4 class="mb-0">@Model.Title</h4>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">
+                @Html.DisplayNameFor(model => model.Title)
+            </dt>
+            <dd class="col-sm-9">
+                @Html.DisplayFor(model => model.Title)
+            </dd>
+
+            <dt class="col-sm-3">
+                @Html.DisplayNameFor(model => model.EventDate)
+            </dt>
+            <dd class="col-sm-9">
+                @Model.EventDate.ToString("dddd, MMMM dd, yyyy")
+            </dd>
+
+            <dt class="col-sm-3">
+                Event Time
+            </dt>
+            <dd class="col-sm-9">
+                <strong>@DateTime.Today.Add(Model.StartTime).ToString("h:mm tt")</strong> - <strong>@DateTime.Today.Add(Model.EndTime).ToString("h:mm tt")</strong>
+                <br><small class="text-muted">Duration: @((Model.EndTime - Model.StartTime).TotalHours.ToString("0.0")) hours</small>
+            </dd>
+
+            <dt class="col-sm-3">
+                @Html.DisplayNameFor(model => model.Location)
+            </dt>
+            <dd class="col-sm-9">
+                @Html.DisplayFor(model => model.Location)
+            </dd>
+
+            <dt class="col-sm-3">
+                Created By
+            </dt>
+            <dd class="col-sm-9">
+                @Html.DisplayFor(model => model.CreatedByCoach.Name)
+                <br><small class="text-muted">@Html.DisplayFor(model => model.CreatedByCoach.Email)</small>
+            </dd>
+        </dl>
+    </div>
+</div>
+
+<div class="mt-4">
+    @if (User.IsInRole("Admin") || User.IsInRole("Coach"))
+    {
+        <a asp-action="Edit" asp-route-id="@Model.EventId" class="btn btn-primary">Edit Event</a>
+    }
+
+    @if (User.IsInRole("Admin") || User.IsInRole("Coach"))
+    {
+        <a asp-controller="EventScores" asp-action="Create" asp-route-eventId="@Model.EventId" class="btn btn-success">Add Score</a>
+    }
+
+    <a asp-action="Index" class="btn btn-secondary">Back to Events</a>
+
+    @if (User.IsInRole("Admin") || User.IsInRole("Coach"))
+    {
+        <a asp-action="Delete" asp-route-id="@Model.EventId" class="btn btn-outline-danger">Delete Event</a>
+    }
+</div>
+
+@* Show related scores for this event *@
+@if (Model.EventScores != null && Model.EventScores.Any())
+{
+    <div class="mt-5">
+        <h5>Event Scores</h5>
+        <div class="table-responsive">
+            <table class="table table-sm table-striped">
+                <thead>
+                    <tr>
+                        <th>Athlete</th>
+                        <th>Score</th>
+                        <th>Holes Completed</th>
+                        <th>Entered By</th>
+                        <th>Date Entered</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var score in Model.EventScores.OrderBy(s => s.GolfScore))
+                    {
+                        <tr>
+                            <td>@score.Athlete?.Name</td>
+                            <td><strong>@score.GolfScore</strong></td>
+                            <td>@score.HolesCompleted</td>
+                            <td>@score.EnteredByPartner?.Name</td>
+                            <td>@score.Timestamp.ToString("MM/dd/yyyy")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+else
+{
+    <div class="mt-5">
+        <div class="alert alert-info">
+            <h6 class="alert-heading">No Scores Yet</h6>
+            <p class="mb-0">No scores have been entered for this event yet.</p>
+        </div>
+    </div>
+}

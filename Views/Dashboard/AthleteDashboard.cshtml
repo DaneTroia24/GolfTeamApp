@@ -1,0 +1,216 @@
+﻿@model GolfTeamApp.Models.Athlete
+@{
+    ViewData["Title"] = "Athlete Dashboard";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h2>Welcome, @(Model?.Name ?? "Athlete")!</h2>
+            <p class="text-muted">Your golf progress and information</p>
+        </div>
+    </div>
+
+    @if (Model != null)
+    {
+        <!-- Athlete Profile Card -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5><i class="fas fa-user-circle"></i> Your Profile</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 text-center">
+                                @if (!string.IsNullOrEmpty(Model.PictureUrl))
+                                {
+                                    <img src="@Model.PictureUrl" alt="@Model.Name" class="img-thumbnail mb-3" style="max-width: 200px;">
+                                }
+                                else
+                                {
+                                    <div class="bg-light border rounded p-5 mb-3" style="width: 200px; height: 200px; margin: 0 auto;">
+                                        <i class="fas fa-user fa-6x text-muted"></i>
+                                    </div>
+                                }
+                                <h4>@Model.Name</h4>
+                                @if (Model.Partner != null)
+                                {
+                                    <p class="text-muted"><i class="fas fa-handshake"></i> Partner: <strong>@Model.Partner.Name</strong></p>
+                                }
+                            </div>
+                            <div class="col-md-8">
+                                <h5>Your Golf Skills</h5>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card bg-primary text-white text-center">
+                                            <div class="card-body">
+                                                <h3>@Model.SwingRating <small>/5</small></h3>
+                                                <p class="mb-0">Swing Rating</p>
+                                                <div class="mt-2">
+                                                    @for (int i = 1; i <= 5; i++)
+                                                    {
+                                                        if (i <= Model.SwingRating)
+                                                        {
+                                                            <i class="fas fa-star"></i>
+                                                        }
+                                                        else
+                                                        {
+                                                            <i class="far fa-star"></i>
+                                                        }
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card bg-info text-white text-center">
+                                            <div class="card-body">
+                                                <h3>@Model.PowerRating <small>/5</small></h3>
+                                                <p class="mb-0">Power Rating</p>
+                                                <div class="mt-2">
+                                                    @for (int i = 1; i <= 5; i++)
+                                                    {
+                                                        if (i <= Model.PowerRating)
+                                                        {
+                                                            <i class="fas fa-star"></i>
+                                                        }
+                                                        else
+                                                        {
+                                                            <i class="far fa-star"></i>
+                                                        }
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card bg-warning text-white text-center">
+                                            <div class="card-body">
+                                                <h3>@Model.UnderstandingRating <small>/5</small></h3>
+                                                <p class="mb-0">Understanding</p>
+                                                <div class="mt-2">
+                                                    @for (int i = 1; i <= 5; i++)
+                                                    {
+                                                        if (i <= Model.UnderstandingRating)
+                                                        {
+                                                            <i class="fas fa-star"></i>
+                                                        }
+                                                        else
+                                                        {
+                                                            <i class="far fa-star"></i>
+                                                        }
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Your Scores Section -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h5><i class="fas fa-golf-ball"></i> Your Golf Scores</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.EventScores != null && Model.EventScores.Any())
+                        {
+                            <!-- Score Summary -->
+                            <div class="row mb-4">
+                                <div class="col-md-3">
+                                    <div class="card bg-light text-center">
+                                        <div class="card-body">
+                                            <h4>@Model.EventScores.Count()</h4>
+                                            <p class="mb-0">Total Rounds</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card bg-light text-center">
+                                        <div class="card-body">
+                                            <h4>@(Model.EventScores.Any() ? Model.EventScores.Average(s => s.GolfScore).ToString("F1") : "0")</h4>
+                                            <p class="mb-0">Average Score</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card bg-light text-center">
+                                        <div class="card-body">
+                                            <h4>@(Model.EventScores.Any() ? Model.EventScores.Min(s => s.GolfScore) : 0)</h4>
+                                            <p class="mb-0">Best Score</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card bg-light text-center">
+                                        <div class="card-body">
+                                            <h4>@(Model.EventScores.Any() ? Model.EventScores.OrderByDescending(s => s.Timestamp).First().Timestamp.ToString("MMM dd") : "None")</h4>
+                                            <p class="mb-0">Last Played</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Recent Scores Table -->
+                            <h6>Your Recent Scores</h6>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Event</th>
+                                            <th>Your Score</th>
+                                            <th>Holes Played</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var score in Model.EventScores.OrderByDescending(s => s.Timestamp))
+                                        {
+                                            <tr>
+                                                <td><strong>@(score.Event?.Title ?? "Event")</strong></td>
+                                                <td>
+                                                    <span class="badge badge-success">@score.GolfScore</span>
+                                                </td>
+                                                <td>@score.HolesCompleted</td>
+                                                <td>@score.Timestamp.ToString("MMM dd, yyyy")</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center">
+                                <i class="fas fa-golf-ball fa-3x text-muted mb-3"></i>
+                                <h5>No Scores Yet</h5>
+                                <p class="text-muted">You haven't played in any events yet. Keep practicing!</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- No athlete data -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="alert alert-warning text-center">
+                    <h4><i class="fas fa-exclamation-triangle"></i> Profile Not Found</h4>
+                    <p>Unable to load your athlete profile. Please contact your coach.</p>
+                    <a href="/" class="btn btn-primary">Return to Home</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

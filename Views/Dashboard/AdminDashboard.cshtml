@@ -1,0 +1,68 @@
+﻿@model IEnumerable<GolfTeamApp.Models.GolfEvent>
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<h1>Admin Dashboard</h1>
+<p class="lead">System Overview & Administration</p>
+
+<div class="row">
+    <div class="col-md-2">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h4>@ViewBag.TotalCoaches</h4>
+                <p>Coaches</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h4>@ViewBag.TotalPartners</h4>
+                <p>Partners</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h4>@ViewBag.TotalAthletes</h4>
+                <p>Athletes</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <h4>@ViewBag.TotalEvents</h4>
+                <p>Events</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card bg-secondary text-white">
+            <div class="card-body">
+                <h4>@ViewBag.TotalScores</h4>
+                <p>Scores</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <h4>@ViewBag.UsersWithoutProfiles</h4>
+                <p>Unassigned Users</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <h3>Quick Actions</h3>
+        <a href="@Url.Action("Index", "Coaches")" class="btn btn-primary">Manage Coaches</a>
+        <a href="@Url.Action("Index", "Partners")" class="btn btn-success">Manage Partners</a>
+        <a href="@Url.Action("Index", "Athletes")" class="btn btn-info">Manage Athletes</a>
+        <a href="@Url.Action("Index", "GolfEvents")" class="btn btn-warning">Manage Events</a>
+    </div>
+</div>

@@ -1,0 +1,194 @@
+﻿@model IEnumerable<GolfTeamApp.Models.GolfEvent>
+@{
+    ViewData["Title"] = "Coach Dashboard";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h2>Coach Dashboard</h2>
+            <p class="text-muted">Team overview and management</p>
+        </div>
+    </div>
+
+    <!-- Stats Cards Row -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4>@ViewBag.TotalAthletes</h4>
+                            <p class="mb-0">Total Athletes</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-users fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4>@ViewBag.TotalEvents</h4>
+                            <p class="mb-0">Golf Events</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-calendar fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4>@ViewBag.TotalScores</h4>
+                            <p class="mb-0">Scores Recorded</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-golf-ball fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4>@ViewBag.TotalPartners</h4>
+                            <p class="mb-0">Active Partners</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-handshake fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions Row -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <a href="/Athletes/Create" class="btn btn-primary btn-block">
+                                <i class="fas fa-plus"></i> Add New Athlete
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="/GolfEvents/Create" class="btn btn-success btn-block">
+                                <i class="fas fa-calendar-plus"></i> Create Golf Event
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="/Partners/Create" class="btn btn-info btn-block">
+                                <i class="fas fa-user-plus"></i> Add Partner
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="/EventScores" class="btn btn-warning btn-block">
+                                <i class="fas fa-chart-line"></i> View All Scores
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Events and Team Overview Row -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5>Recent Golf Events</h5>
+                    <a href="/GolfEvents" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    @if (Model != null && Model.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Event</th>
+                                        <th>Date</th>
+                                        <th>Location</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var evt in Model.Take(5))
+                                    {
+                                        <tr>
+                                            <td><strong>@evt.Title</strong></td>
+                                            <td>@evt.EventDate.ToString("MMM dd, yyyy")</td>
+                                            <td>@evt.Location</td>
+                                            <td>
+                                                <a href="/GolfEvents/Details/@evt.EventId" class="btn btn-sm btn-info">View</a>
+                                                <a href="/GolfEvents/Edit/@evt.EventId" class="btn btn-sm btn-secondary">Edit</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No events created yet. <a href="/GolfEvents/Create">Create your first event!</a></p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Team Status</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between">
+                            <span>Athletes with Partners:</span>
+                            <strong>@ViewBag.AthletesWithPartners / @ViewBag.TotalAthletes</strong>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: @(ViewBag.TotalAthletes > 0 ? (ViewBag.AthletesWithPartners * 100 / ViewBag.TotalAthletes) : 0)%"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <h6>Recent Activity</h6>
+                        <ul class="list-unstyled">
+                            <li><small class="text-muted">Latest scores recorded: @ViewBag.LatestScoreDate</small></li>
+                            <li><small class="text-muted">Next event: @ViewBag.NextEventDate</small></li>
+                        </ul>
+                    </div>
+
+                    <div class="text-center">
+                        <a href="/Athletes" class="btn btn-outline-primary btn-sm">Manage Athletes</a>
+                        <a href="/Partners" class="btn btn-outline-info btn-sm">Manage Partners</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

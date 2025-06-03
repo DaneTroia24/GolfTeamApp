@@ -1,0 +1,77 @@
+﻿@model IEnumerable<GolfTeamApp.Models.GolfEvent>
+
+@{
+    ViewData["Title"] = "Golf Events";
+}
+
+<h1>Golf Events</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New Event</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EventDate)
+            </th>
+            <th>
+                Start Time
+            </th>
+            <th>
+                End Time
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Location)
+            </th>
+            <th>
+                Coach
+            </th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @item.EventDate.ToString("MM/dd/yyyy")
+                </td>
+                <td>
+                    @DateTime.Today.Add(item.StartTime).ToString("h:mm tt")
+                </td>
+                <td>
+                    @DateTime.Today.Add(item.EndTime).ToString("h:mm tt")
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Location)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedByCoach.Name)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.EventId" class="btn btn-sm btn-outline-primary">Edit</a>
+                    <a asp-action="Details" asp-route-id="@item.EventId" class="btn btn-sm btn-outline-info">Details</a>
+                    <a asp-action="Delete" asp-route-id="@item.EventId" class="btn btn-sm btn-outline-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info" role="alert">
+        <h4 class="alert-heading">No Events Found</h4>
+        <p>There are currently no golf events scheduled.</p>
+        <hr>
+        <p class="mb-0"><a asp-action="Create" class="btn btn-primary">Create the first event</a></p>
+    </div>
+}

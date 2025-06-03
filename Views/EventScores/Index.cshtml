@@ -1,0 +1,65 @@
+﻿@model IEnumerable<GolfTeamApp.Models.EventScore>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Athlete)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Event)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EnteredByPartner)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GolfScore)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HolesCompleted)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Timestamp)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Athlete.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Event.Location)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EnteredByPartner.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GolfScore)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HolesCompleted)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Timestamp)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ScoreId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.ScoreId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.ScoreId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

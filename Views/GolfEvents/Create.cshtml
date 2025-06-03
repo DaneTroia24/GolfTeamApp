@@ -1,0 +1,148 @@
+﻿@model GolfTeamApp.Models.GolfEvent
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create Golf Event</h1>
+
+<h4>Golf Event</h4>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" placeholder="Enter event title" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="EventDate" class="control-label"></label>
+                <input asp-for="EventDate" class="form-control" type="date" />
+                <span asp-validation-for="EventDate" class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="StartTime" class="control-label"></label>
+                        <select asp-for="StartTime" class="form-control" id="startTimeSelect">
+                            <option value="">Select Start Time</option>
+                        </select>
+                        <span asp-validation-for="StartTime" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="EndTime" class="control-label"></label>
+                        <select asp-for="EndTime" class="form-control" id="endTimeSelect">
+                            <option value="">Select End Time</option>
+                        </select>
+                        <span asp-validation-for="EndTime" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Location" class="control-label"></label>
+                <input asp-for="Location" class="form-control" placeholder="Enter event location" />
+                <span asp-validation-for="Location" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="CreatedByCoachId" class="control-label"></label>
+                <select asp-for="CreatedByCoachId" class="form-control" asp-items="ViewBag.CreatedByCoachId">
+                    <option value="">Select Coach</option>
+                </select>
+                <span asp-validation-for="CreatedByCoachId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Create Event" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Function to generate time options in 15-minute increments
+        function populateTimeOptions() {
+            const startSelect = document.getElementById('startTimeSelect');
+            const endSelect = document.getElementById('endTimeSelect');
+
+            // Clear existing options (except the first placeholder)
+            startSelect.innerHTML = '<option value="">Select Start Time</option>';
+            endSelect.innerHTML = '<option value="">Select End Time</option>';
+
+            // Generate time options from 5:00 AM to 10:00 PM in 15-minute increments
+            for (let hour = 5; hour <= 22; hour++) {
+                for (let minute = 0; minute < 60; minute += 15) {
+                    const timeValue = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}:00`;
+
+                    // Format for display (12-hour format)
+                    let displayHour = hour;
+                    let ampm = 'AM';
+
+                    if (hour === 0) {
+                        displayHour = 12;
+                    } else if (hour === 12) {
+                        ampm = 'PM';
+                    } else if (hour > 12) {
+                        displayHour = hour - 12;
+                        ampm = 'PM';
+                    }
+
+                    const displayTime = `${displayHour}:${minute.toString().padStart(2, '0')} ${ampm}`;
+
+                    // Add to both dropdowns
+                    const startOption = new Option(displayTime, timeValue);
+                    const endOption = new Option(displayTime, timeValue);
+
+                    startSelect.add(startOption);
+                    endSelect.add(endOption);
+                }
+            }
+        }
+
+        // Function to validate that end time is after start time
+        function validateTimes() {
+            const startTime = document.getElementById('startTimeSelect').value;
+            const endTime = document.getElementById('endTimeSelect').value;
+
+            if (startTime && endTime) {
+                if (endTime <= startTime) {
+                    alert('End time must be after start time.');
+                    document.getElementById('endTimeSelect').value = '';
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // Populate time options when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            populateTimeOptions();
+
+            // Add event listeners for validation
+            document.getElementById('startTimeSelect').addEventListener('change', validateTimes);
+            document.getElementById('endTimeSelect').addEventListener('change', validateTimes);
+
+            // Form validation before submit
+            document.querySelector('form').addEventListener('submit', function(e) {
+                if (!validateTimes()) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+}
