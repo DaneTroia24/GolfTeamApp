@@ -116,4 +116,27 @@
 @section Scripts {
     <!-- Font Awesome for icons (if not already included in _Layout.cshtml) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+    <style>
+        /* Fix badge text colors for better readability */
+        .badge-info {
+            background-color: #17a2b8 !important;
+            color: #fff !important;
+        }
+
+        .badge-warning {
+            background-color: #ffc107 !important;
+            color: #212529 !important; /* Dark text on yellow background */
+        }
+
+        .badge-success {
+            background-color: #28a745 !important;
+            color: #fff !important;
+        }
+
+        /* Ensure all badges have proper contrast */
+        .badge {
+            font-weight: 600;
+        }
+    </style>
 }

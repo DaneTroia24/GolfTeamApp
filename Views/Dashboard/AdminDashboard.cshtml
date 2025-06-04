@@ -64,5 +64,72 @@
         <a href="@Url.Action("Index", "Partners")" class="btn btn-success">Manage Partners</a>
         <a href="@Url.Action("Index", "Athletes")" class="btn btn-info">Manage Athletes</a>
         <a href="@Url.Action("Index", "GolfEvents")" class="btn btn-warning">Manage Events</a>
+
+        <!-- NEW: Admin Data View Button -->
+        <a href="@Url.Action("AllData", "AdminData")" class="btn btn-dark">
+            <i class="fas fa-table"></i> View All Data
+        </a>
     </div>
 </div>
+
+<!-- Add a dedicated section for advanced admin tools -->
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5><i class="fas fa-tools"></i> Advanced Admin Tools</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="card border-primary">
+                            <div class="card-body text-center">
+                                <i class="fas fa-table fa-3x text-primary mb-3"></i>
+                                <h6>Complete Data View</h6>
+                                <p class="text-muted small">View all athletes, ratings, and scores in a comprehensive spreadsheet format</p>
+                                <a href="@Url.Action("AllData", "AdminData")" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-eye"></i> View All Data
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card border-success">
+                            <div class="card-body text-center">
+                                <i class="fas fa-download fa-3x text-success mb-3"></i>
+                                <h6>Data Export</h6>
+                                <p class="text-muted small">Export complete data set to CSV for external analysis</p>
+                                <a href="@Url.Action("AllData", "AdminData")" class="btn btn-success btn-sm">
+                                    <i class="fas fa-download"></i> Export Data
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card border-info">
+                            <div class="card-body text-center">
+                                <i class="fas fa-chart-bar fa-3x text-info mb-3"></i>
+                                <h6>System Analytics</h6>
+                                <p class="text-muted small">Comprehensive overview of system usage and statistics</p>
+                                <button class="btn btn-info btn-sm" onclick="showSystemStats()">
+                                    <i class="fas fa-chart-line"></i> View Analytics
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+    <script>
+        function showSystemStats() {
+            alert('System Analytics feature coming soon!\n\nThis will include:\n- User activity trends\n- Score improvement analytics\n- Event participation rates\n- Performance comparisons');
+        }
+    </script>
+}

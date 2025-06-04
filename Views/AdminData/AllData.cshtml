@@ -1,0 +1,375 @@
+﻿@model GolfTeamApp.Controllers.AdminDataViewModel
+
+@{
+    ViewData["Title"] = "All Data - Admin View";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1>All Data - Admin View</h1>
+                    <p class="text-muted">Complete data overview for all athletes, ratings, and event scores</p>
+                </div>
+                <div>
+                    <button class="btn btn-success" onclick="exportToCSV()">
+                        <i class="fas fa-download"></i> Export to CSV
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Athletes.Any())
+    {
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-table"></i> Complete Data Table
+                            <small class="ml-2">(@Model.Athletes.Count athletes, @Model.AllEvents.Count events)</small>
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped table-hover mb-0" id="dataTable">
+                                <thead class="thead-dark sticky-top">
+                                    <tr>
+                                        <!-- Fixed columns -->
+                                        <th rowspan="2" class="align-middle text-center" style="min-width: 150px;">
+                                            <strong>Athlete Name</strong>
+                                        </th>
+                                        <th rowspan="2" class="align-middle text-center" style="min-width: 120px;">
+                                            <strong>Assigned Partner</strong>
+                                        </th>
+
+                                        <!-- Skill Ratings -->
+                                        <th colspan="3" class="text-center bg-info text-white">
+                                            <strong>Skill Ratings (1-5)</strong>
+                                        </th>
+
+                                        <!-- Dynamic event columns -->
+                                        @foreach (var evt in Model.AllEvents)
+                                        {
+                                            <th colspan="2" class="text-center bg-success text-white" style="min-width: 160px;">
+                                                <div><strong>@evt.Title</strong></div>
+                                                <small>@evt.EventDate.ToString("MM/dd/yyyy")</small>
+                                            </th>
+                                        }
+                                    </tr>
+                                    <tr>
+                                        <!-- Rating sub-headers -->
+                                        <th class="text-center bg-info text-white" style="min-width: 80px;">Swing</th>
+                                        <th class="text-center bg-info text-white" style="min-width: 80px;">Power</th>
+                                        <th class="text-center bg-info text-white" style="min-width: 100px;">Understanding</th>
+
+                                        <!-- Event sub-headers -->
+                                        @foreach (var evt in Model.AllEvents)
+                                        {
+                                            <th class="text-center bg-success text-white" style="min-width: 70px;">Score</th>
+                                            <th class="text-center bg-success text-white" style="min-width: 90px;">Entered By</th>
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var athlete in Model.Athletes)
+                                    {
+                                        <tr>
+                                            <!-- Athlete Name -->
+                                            <td class="font-weight-bold">
+                                                <div class="d-flex align-items-center">
+                                                    @if (!string.IsNullOrEmpty(athlete.PictureUrl))
+                                                    {
+                                                        <img src="@athlete.PictureUrl" alt="@athlete.Name"
+                                                             class="rounded-circle mr-2"
+                                                             style="width: 30px; height: 30px; object-fit: cover;" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center mr-2"
+                                                             style="width: 30px; height: 30px; font-size: 12px;">
+                                                            @athlete.Name.Substring(0, 1).ToUpper()
+                                                        </div>
+                                                    }
+                                                    @athlete.Name
+                                                </div>
+                                            </td>
+
+                                            <!-- Assigned Partner -->
+                                            <td class="text-center">
+                                                @if (athlete.Partner != null)
+                                                {
+                                                    <div class="font-weight-bold">@athlete.Partner.Name</div>
+                                                    <small class="text-muted">@athlete.Partner.Email</small>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">Not Assigned</span>
+                                                }
+                                            </td>
+
+                                            <!-- Skill Ratings -->
+                                            <td class="text-center">
+                                                <span class="badge badge-info badge-lg">@athlete.SwingRating</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge badge-warning badge-lg">@athlete.PowerRating</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge badge-success badge-lg">@athlete.UnderstandingRating</span>
+                                            </td>
+
+                                            <!-- Event Scores -->
+                                            @foreach (var evt in Model.AllEvents)
+                                            {
+                                                var score = athlete.EventScores.FirstOrDefault(es => es.EventId == evt.EventId);
+
+                                                @if (score != null)
+                                                {
+                                                    <!-- Score -->
+                                                    <td class="text-center">
+                                                        <div class="font-weight-bold text-primary">@score.GolfScore</div>
+                                                        <small class="text-muted">(@score.HolesCompleted holes)</small>
+                                                    </td>
+
+                                                    <!-- Entered By Partner -->
+                                                    <td class="text-center">
+                                                        @if (score.EnteredByPartner != null)
+                                                        {
+                                                            <div class="font-weight-bold">@score.EnteredByPartner.Name</div>
+                                                            <small class="text-muted">@score.Timestamp.ToString("MM/dd")</small>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="text-muted">Unknown</span>
+                                                        }
+                                                    </td>
+                                                }
+                                                else
+                                                {
+                                                    <!-- No Score -->
+                                                    <td class="text-center text-muted">
+                                                        <strong>NA</strong>
+                                                    </td>
+
+                                                    <!-- No Partner -->
+                                                    <td class="text-center text-muted">
+                                                        <strong>NA</strong>
+                                                    </td>
+                                                }
+                                            }
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Statistics -->
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-chart-bar"></i> Summary Statistics</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <h4 class="text-primary">@Model.Athletes.Count</h4>
+                                    <p class="text-muted mb-0">Total Athletes</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <h4 class="text-success">@Model.AllEvents.Count</h4>
+                                    <p class="text-muted mb-0">Total Events</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <h4 class="text-info">@Model.Athletes.SelectMany(a => a.EventScores).Count()</h4>
+                                    <p class="text-muted mb-0">Total Scores</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <h4 class="text-warning">@Model.Athletes.Where(a => a.Partner != null).Count()</h4>
+                                    <p class="text-muted mb-0">Athletes with Partners</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    <h4><i class="fas fa-info-circle"></i> No Data Available</h4>
+                    <p>There are no athletes in the system yet.</p>
+                    <a href="/Athletes/Create" class="btn btn-primary">Create First Athlete</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+    <script>
+        // Function to export table data to CSV
+        function exportToCSV() {
+            const table = document.getElementById('dataTable');
+            let csv = [];
+
+            // Get header rows
+            const headerRows = table.querySelectorAll('thead tr');
+            headerRows.forEach(row => {
+                const cells = row.querySelectorAll('th');
+                const rowData = [];
+                cells.forEach(cell => {
+                    // Handle colspan cells
+                    const colspan = cell.getAttribute('colspan') || 1;
+                    const cellText = cell.innerText.replace(/\s+/g, ' ').trim();
+
+                    for (let i = 0; i < colspan; i++) {
+                        rowData.push(`"${cellText}"`);
+                    }
+                });
+                csv.push(rowData.join(','));
+            });
+
+            // Get body rows
+            const rows = table.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                const rowData = [];
+                cells.forEach(cell => {
+                    const cellText = cell.innerText.replace(/\s+/g, ' ').trim();
+                    rowData.push(`"${cellText}"`);
+                });
+                csv.push(rowData.join(','));
+            });
+
+            // Create and download CSV file
+            const csvContent = csv.join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `golf_team_data_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Add some interactive features
+        document.addEventListener('DOMContentLoaded', function () {
+            // Highlight table rows on hover
+            const rows = document.querySelectorAll('#dataTable tbody tr');
+            rows.forEach(row => {
+                row.addEventListener('mouseenter', function () {
+                    this.style.backgroundColor = '#f8f9fa';
+                });
+                row.addEventListener('mouseleave', function () {
+                    this.style.backgroundColor = '';
+                });
+            });
+
+            // Add tooltip information
+            const badges = document.querySelectorAll('.badge');
+            badges.forEach(badge => {
+                badge.style.cursor = 'help';
+                badge.title = 'Rating scale: 1 (Beginner) to 5 (Advanced)';
+            });
+        });
+    </script>
+
+    <style>
+        /* Custom styles for the data table */
+        #dataTable {
+            font-size: 0.9rem;
+        }
+
+            #dataTable th {
+                vertical-align: middle;
+                border: 1px solid #dee2e6;
+            }
+
+            #dataTable td {
+                vertical-align: middle;
+                border: 1px solid #dee2e6;
+            }
+
+        .sticky-top {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .table-responsive {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .badge-lg {
+            font-size: 0.9rem;
+            padding: 0.5rem 0.75rem;
+            color: #fff !important;
+        }
+
+        /* Fix badge text colors for better readability */
+        .badge-info {
+            color: #fff !important;
+        }
+
+        .badge-warning {
+            color: #212529 !important; /* Dark text on yellow background */
+        }
+
+        .badge-success {
+            color: #fff !important;
+        }
+
+        /* Improve readability for alternating columns */
+        #dataTable td:nth-child(odd) {
+            background-color: rgba(0,0,0,0.02);
+        }
+
+        /* Better spacing for mobile */
+        @@media (max-width: 768px) {
+            #dataTable {
+                font-size: 0.8rem;
+            }
+
+            .card-header h5 {
+                font-size: 1rem;
+            }
+        }
+
+        /* Additional styles to ensure proper table display */
+        .table-bordered th,
+        .table-bordered td {
+            border: 1px solid #dee2e6 !important;
+        }
+
+        .container-fluid {
+            max-width: 100%;
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+    </style>
+}
