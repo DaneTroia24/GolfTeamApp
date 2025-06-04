@@ -1,54 +1,244 @@
 ﻿@model GolfTeamApp.Models.EventScore
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Score Details";
 }
 
-<h1>Details</h1>
+<h1>Score Details</h1>
 
-<div>
-    <h4>EventScore</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Athlete)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Athlete.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Event)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Event.Location)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.EnteredByPartner)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.EnteredByPartner.Email)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.GolfScore)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.GolfScore)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.HolesCompleted)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.HolesCompleted)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Timestamp)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Timestamp)
-        </dd>
-    </dl>
+<div class="card">
+    <div class="card-header bg-success text-white">
+        <h4 class="mb-0">
+            <i class="fas fa-golf-ball"></i> 
+            Golf Score Entry
+        </h4>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <dl class="row">
+                    <dt class="col-sm-4">Athlete:</dt>
+                    <dd class="col-sm-8">
+                        <div class="d-flex align-items-center">
+                            @if (!string.IsNullOrEmpty(Model.Athlete?.PictureUrl))
+                            {
+                                <img src="@Model.Athlete.PictureUrl" alt="@Model.Athlete.Name" 
+                                     class="rounded-circle me-2" 
+                                     style="width: 40px; height: 40px; object-fit: cover;" />
+                            }
+                            else
+                            {
+                                <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
+                                     style="width: 40px; height: 40px; font-size: 16px;">
+                                    @(Model.Athlete?.Name?.Substring(0, 1).ToUpper() ?? "?")
+                                </div>
+                            }
+                            <div>
+                                <strong>@(Model.Athlete?.Name ?? "Unknown Athlete")</strong>
+                                <br>
+                                <small class="text-muted">
+                                    Partner: @(Model.Athlete?.Partner?.Name ?? "No partner assigned")
+                                </small>
+                            </div>
+                        </div>
+                    </dd>
+
+                    <dt class="col-sm-4">Event:</dt>
+                    <dd class="col-sm-8">
+                        <a asp-controller="GolfEvents" asp-action="Details" asp-route-id="@Model.Event?.EventId" 
+                           class="text-decoration-none">
+                            <strong>@(Model.Event?.Title ?? "Unknown Event")</strong>
+                        </a>
+                        <br>
+                        <small class="text-muted">
+                            @(Model.Event?.EventDate.ToString("dddd, MMMM dd, yyyy") ?? "Unknown date")
+                        </small>
+                        <br>
+                        <small class="text-muted">
+                            <i class="fas fa-map-marker-alt"></i> @(Model.Event?.Location ?? "Unknown location")
+                        </small>
+                    </dd>
+
+                    <dt class="col-sm-4">Golf Score:</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge badge-success badge-lg">@Model.GolfScore</span>
+                    </dd>
+
+                    <dt class="col-sm-4">Holes Completed:</dt>
+                    <dd class="col-sm-8">
+                        @Model.HolesCompleted out of 18 holes
+                        <div class="progress mt-2" style="height: 10px;">
+                            <div class="progress-bar bg-info" role="progressbar" 
+                                 style="width: @((Model.HolesCompleted * 100 / 18))%" 
+                                 aria-valuenow="@Model.HolesCompleted" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="18">
+                            </div>
+                        </div>
+                    </dd>
+                </dl>
+            </div>
+            <div class="col-md-6">
+                <dl class="row">
+                    <dt class="col-sm-4">Entered By:</dt>
+                    <dd class="col-sm-8">
+                        <strong>@(Model.EnteredByPartner?.Name ?? "Unknown Partner")</strong>
+                        @if (!string.IsNullOrEmpty(Model.EnteredByPartner?.Email))
+                        {
+                            <br>
+                            <small class="text-muted">
+                                <i class="fas fa-envelope"></i> 
+                                <a href="mailto:@Model.EnteredByPartner.Email">@Model.EnteredByPartner.Email</a>
+                            </small>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.EnteredByPartner?.Phone))
+                        {
+                            <br>
+                            <small class="text-muted">
+                                <i class="fas fa-phone"></i> 
+                                <a href="tel:@Model.EnteredByPartner.Phone">@Model.EnteredByPartner.Phone</a>
+                            </small>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-4">Date Entered:</dt>
+                    <dd class="col-sm-8">
+                        @Model.Timestamp.ToString("dddd, MMMM dd, yyyy")
+                        <br>
+                        <small class="text-muted">at @Model.Timestamp.ToString("h:mm tt")</small>
+                    </dd>
+
+                    @if (Model.Event != null)
+                    {
+                        <dt class="col-sm-4">Event Time:</dt>
+                        <dd class="col-sm-8">
+                            @DateTime.Today.Add(Model.Event.StartTime).ToString("h:mm tt") - 
+                            @DateTime.Today.Add(Model.Event.EndTime).ToString("h:mm tt")
+                            <br>
+                            <small class="text-muted">
+                                Duration: @((Model.Event.EndTime - Model.Event.StartTime).TotalHours.ToString("0.0")) hours
+                            </small>
+                        </dd>
+                    }
+                </dl>
+            </div>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.ScoreId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+<!-- Action Buttons -->
+<div class="mt-4">
+    @if (User.IsInRole("Admin") || User.IsInRole("Coach"))
+    {
+        <!-- Admins and Coaches can edit and delete any score -->
+        <a asp-action="Edit" asp-route-id="@Model.ScoreId" class="btn btn-primary">
+            <i class="fas fa-edit"></i> Edit Score
+        </a>
+
+        <a asp-action="Delete" asp-route-id="@Model.ScoreId" class="btn btn-danger"
+           onclick="return confirm('Are you sure you want to delete this score?')">
+            <i class="fas fa-trash"></i> Delete Score
+        </a>
+    }
+    else if (User.IsInRole("Partner"))
+    {
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        var userIsEnterer = Model.EnteredByPartner?.UserId == userId;
+        var userOwnsAthlete = Model.Athlete?.Partner?.UserId == userId;
+
+        @if (userIsEnterer && userOwnsAthlete)
+        {
+            <!-- Partners can only edit scores they entered for their assigned athletes -->
+            <a asp-action="Edit" asp-route-id="@Model.ScoreId" class="btn btn-primary">
+                <i class="fas fa-edit"></i> Edit Score
+            </a>
+        }
+        
+        <!-- NO DELETE button for Partners -->
+    }
+
+    <!-- Everyone can go back to the list -->
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Scores
+    </a>
+
+    <!-- Additional navigation options -->
+    <a asp-controller="Athletes" asp-action="Details" asp-route-id="@Model.AthleteId" class="btn btn-outline-info">
+        <i class="fas fa-user"></i> View Athlete
+    </a>
+
+    <a asp-controller="GolfEvents" asp-action="Details" asp-route-id="@Model.EventId" class="btn btn-outline-success">
+        <i class="fas fa-calendar"></i> View Event
+    </a>
 </div>
+
+@section Scripts {
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+    <style>
+        /* Enhanced badge styling */
+        .badge-lg {
+            font-size: 1.2rem;
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background-color: #28a745 !important;
+            color: #fff !important;
+        }
+
+        /* Card enhancements */
+        .card-header {
+            border-bottom: 3px solid rgba(255,255,255,0.2);
+        }
+
+        /* Definition list styling */
+        dt {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        dd {
+            margin-bottom: 1rem;
+        }
+
+        /* Progress bar styling */
+        .progress {
+            background-color: #e9ecef;
+        }
+
+        .progress-bar {
+            transition: width 0.6s ease;
+        }
+
+        /* Button spacing */
+        .btn {
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Link styling */
+        a {
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive improvements */
+        @@media (max-width: 768px) {
+            .col-md-6 {
+                margin-bottom: 2rem;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+                margin-right: 0;
+            }
+        }
+    </style>
+}

@@ -48,6 +48,7 @@ namespace GolfTeamApp.Controllers
                     return RedirectToAction("Index", "Home");
                 }
 
+                // FIXED: Only show scores for athletes assigned to this partner
                 eventScores = _context.EventScores
                     .Include(e => e.Athlete)
                     .Include(e => e.EnteredByPartner)
@@ -59,7 +60,7 @@ namespace GolfTeamApp.Controllers
                 return Forbid();
             }
 
-            return View(await eventScores.ToListAsync());
+            return View(await eventScores.OrderByDescending(es => es.Event.EventDate).ThenBy(es => es.Athlete.Name).ToListAsync());
         }
 
         // GET: EventScores/Details/5 - Admin, Coach, and Partner can view
@@ -186,7 +187,10 @@ namespace GolfTeamApp.Controllers
                 return NotFound();
             }
 
-            var eventScore = await _context.EventScores.FindAsync(id);
+            var eventScore = await _context.EventScores
+                .Include(es => es.Athlete)
+                .FirstOrDefaultAsync(es => es.ScoreId == id);
+
             if (eventScore == null)
             {
                 return NotFound();
@@ -198,7 +202,7 @@ namespace GolfTeamApp.Controllers
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 var partner = await _context.Partners.FirstOrDefaultAsync(p => p.UserId == userId);
 
-                if (partner == null || eventScore.EnteredByPartnerId != partner.PartnerId)
+                if (partner == null || eventScore.EnteredByPartnerId != partner.PartnerId || eventScore.Athlete.PartnerId != partner.PartnerId)
                 {
                     return Forbid();
                 }
@@ -237,6 +241,13 @@ namespace GolfTeamApp.Controllers
                 {
                     return Forbid();
                 }
+
+                // Verify the athlete still belongs to this partner
+                var athlete = await _context.Athletes.FindAsync(eventScore.AthleteId);
+                if (athlete == null || athlete.PartnerId != partner.PartnerId)
+                {
+                    return Forbid();
+                }
             }
             // Admins and Coaches can edit any score without restrictions
 
@@ -265,7 +276,7 @@ namespace GolfTeamApp.Controllers
             return View(eventScore);
         }
 
-        // GET: EventScores/Delete/5 - Admin and Coach can delete
+        // GET: EventScores/Delete/5 - Only Admin and Coach can delete
         [Authorize(Roles = "Admin,Coach")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -287,7 +298,7 @@ namespace GolfTeamApp.Controllers
             return View(eventScore);
         }
 
-        // POST: EventScores/Delete/5 - Admin and Coach can delete
+        // POST: EventScores/Delete/5 - Only Admin and Coach can delete
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Coach")]
