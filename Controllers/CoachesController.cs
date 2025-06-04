@@ -102,11 +102,11 @@ namespace GolfTeamApp.Controllers
                 else
                 {
                     // User is creating their own coach profile
-                    coach.UserId = userId;
+                    coach.UserId = userId; // CRITICAL: Link the profile to the user
                     _context.Add(coach);
                     await _context.SaveChangesAsync();
 
-                    // Assign Coach role to the user
+                    // Assign Coach role to the user using UserRoleHelper
                     var roleAssigned = await _userRoleHelper.AssignCoachRoleAsync(userId, coach.CoachId);
 
                     if (roleAssigned)

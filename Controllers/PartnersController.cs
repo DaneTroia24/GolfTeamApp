@@ -108,11 +108,11 @@ namespace GolfTeamApp.Controllers
                     // User is creating their own partner profile
                     // Link to their user account and assign the Partner role
 
-                    partner.UserId = userId;
+                    partner.UserId = userId; // CRITICAL: Link the profile to the user
                     _context.Add(partner);
                     await _context.SaveChangesAsync();
 
-                    // Assign Partner role to the user
+                    // Assign Partner role to the user using UserRoleHelper
                     var roleAssigned = await _userRoleHelper.AssignPartnerRoleAsync(userId, partner.PartnerId);
 
                     if (roleAssigned)
