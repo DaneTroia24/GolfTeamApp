@@ -1,54 +1,183 @@
 ﻿@model GolfTeamApp.Models.Athlete
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Athlete Details";
 }
 
-<h1>Details</h1>
+<h1>Athlete Details</h1>
 
-<div>
-    <h4>Athlete</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PictureUrl)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PictureUrl)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SwingRating)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SwingRating)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PowerRating)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PowerRating)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UnderstandingRating)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UnderstandingRating)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Partner)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Partner.Email)
-        </dd>
-    </dl>
+<div class="card">
+    <div class="card-header">
+        <h4 class="mb-0">@Model.Name</h4>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">
+                @Html.DisplayNameFor(model => model.Name)
+            </dt>
+            <dd class="col-sm-9">
+                @Html.DisplayFor(model => model.Name)
+            </dd>
+
+            <dt class="col-sm-3">
+                Picture
+            </dt>
+            <dd class="col-sm-9">
+                @if (!string.IsNullOrEmpty(Model.PictureUrl))
+                {
+                    <img src="@Model.PictureUrl" alt="@Model.Name" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;" class="mb-2" />
+                    <br>
+
+                    <small class="text-muted">@Model.PictureUrl</small>
+                }
+                else
+                {
+                    <div class="bg-secondary text-white d-flex align-items-center justify-content-center mb-2" style="width: 80px; height: 80px; border-radius: 50%; font-size: 24px;">
+                        @Model.Name.Substring(0, 1).ToUpper()
+                    </div>
+                    <small class="text-muted">No picture uploaded</small>
+                }
+            </dd>
+
+            @if (User.IsInRole("Admin") || User.IsInRole("Coach"))
+            {
+                <dt class="col-sm-3">
+                    Skill Ratings
+                </dt>
+                <dd class="col-sm-9">
+                    <div class="mb-2">
+                        <strong>Swing Rating:</strong>
+                        <span class="badge badge-info badge-lg">@Model.SwingRating/5</span>
+                        <div class="progress mt-1" style="height: 10px;">
+                            <div class="progress-bar bg-info" role="progressbar" style="width: @((Model.SwingRating * 20))%" aria-valuenow="@Model.SwingRating" aria-valuemin="0" aria-valuemax="5"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-2">
+                        <strong>Power Rating:</strong>
+                        <span class="badge badge-warning badge-lg">@Model.PowerRating/5</span>
+                        <div class="progress mt-1" style="height: 10px;">
+                            <div class="progress-bar bg-warning" role="progressbar" style="width: @((Model.PowerRating * 20))%" aria-valuenow="@Model.PowerRating" aria-valuemin="0" aria-valuemax="5"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-2">
+                        <strong>Understanding Rating:</strong>
+                        <span class="badge badge-success badge-lg">@Model.UnderstandingRating/5</span>
+                        <div class="progress mt-1" style="height: 10px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: @((Model.UnderstandingRating * 20))%" aria-valuenow="@Model.UnderstandingRating" aria-valuemin="0" aria-valuemax="5"></div>
+                        </div>
+                    </div>
+                </dd>
+            }
+
+            <dt class="col-sm-3">
+                @Html.DisplayNameFor(model => model.Partner)
+            </dt>
+            <dd class="col-sm-9">
+                @if (Model.Partner != null)
+                {
+                    <strong>@Html.DisplayFor(model => model.Partner.Name)</strong>
+                    <br>
+
+                    <small class="text-muted">@Html.DisplayFor(model => model.Partner.Email)</small>
+                    @if (!string.IsNullOrEmpty(Model.Partner.Phone))
+                    {
+                        <br>
+
+                        <small class="text-muted">@Html.DisplayFor(model => model.Partner.Phone)</small>
+                    }
+                }
+                else
+                {
+                    <span class="text-muted">No partner assigned</span>
+                }
+            </dd>
+        </dl>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.AthleteId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+<div class="mt-4">
+    @if (User.IsInRole("Admin") || User.IsInRole("Coach"))
+    {
+        <a asp-action="Edit" asp-route-id="@Model.AthleteId" class="btn btn-primary">
+            <i class="fas fa-edit"></i> Edit Athlete
+        </a>
+    }
+
+    @if (User.IsInRole("Admin") || User.IsInRole("Coach"))
+    {
+        <a asp-controller="EventScores" asp-action="Create" asp-route-athleteId="@Model.AthleteId" class="btn btn-success">
+            <i class="fas fa-plus"></i> Add Score
+        </a>
+    }
+
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Athletes
+    </a>
+
+    @if (User.IsInRole("Admin") || User.IsInRole("Coach"))
+    {
+        <a asp-action="Delete" asp-route-id="@Model.AthleteId" class="btn btn-outline-danger"
+           onclick="return confirm('Are you sure you want to delete this athlete?')">
+            <i class="fas fa-trash"></i> Delete Athlete
+        </a>
+    }
 </div>
+
+@* Show recent scores for this athlete *@
+@if (Model.EventScores != null && Model.EventScores.Any())
+{
+    <div class="mt-5">
+        <h5>Recent Scores</h5>
+        <div class="table-responsive">
+            <table class="table table-sm table-striped">
+                <thead>
+                    <tr>
+                        <th>Event</th>
+                        <th>Score</th>
+                        <th>Holes Completed</th>
+                        <th>Date</th>
+                        @if (User.IsInRole("Admin") || User.IsInRole("Coach"))
+                        {
+                            <th>Entered By</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var score in Model.EventScores.OrderByDescending(s => s.Event.EventDate).Take(10))
+                    {
+                        <tr>
+                            <td>
+                                <a asp-controller="GolfEvents" asp-action="Details" asp-route-id="@score.Event.EventId">
+                                    @score.Event?.Title
+                                </a>
+                            </td>
+                            <td><strong>@score.GolfScore</strong></td>
+                            <td>@score.HolesCompleted</td>
+                            <td>@score.Event?.EventDate.ToString("MM/dd/yyyy")</td>
+                            @if (User.IsInRole("Admin") || User.IsInRole("Coach"))
+                            {
+                                <td>@score.EnteredByPartner?.Name</td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+else
+{
+    <div class="mt-5">
+        <div class="alert alert-info">
+            <h6 class="alert-heading">No Scores Yet</h6>
+            <p class="mb-0">No scores have been entered for this athlete yet.</p>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <!-- Font Awesome for icons (if not already included in _Layout.cshtml) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+}

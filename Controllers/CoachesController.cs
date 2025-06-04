@@ -31,14 +31,14 @@ namespace GolfTeamApp.Controllers
         }
 
         // GET: Coaches - Admin and Coach can view
-        [Authorize(Roles = "Admin,Coach")]
+        [Authorize(Roles = "Admin,Coach,Partner")]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Coaches.ToListAsync());
         }
 
         // GET: Coaches/Details/5 - Admin and Coach can view details
-        [Authorize(Roles = "Admin,Coach")]
+        [Authorize(Roles = "Admin,Coach,Partner")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -173,24 +173,32 @@ namespace GolfTeamApp.Controllers
                 return NotFound();
             }
 
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             // Admin can edit any coach
             if (User.IsInRole("Admin"))
             {
-                // Admin editing - preserve existing UserId
-                var existingCoach = await _context.Coaches.AsNoTracking().FirstOrDefaultAsync(c => c.CoachId == id);
-                if (existingCoach != null)
+                // Admin editing - preserve existing UserId if not provided
+                if (string.IsNullOrEmpty(coach.UserId))
                 {
-                    coach.UserId = existingCoach.UserId;
+                    var existingCoach = await _context.Coaches.AsNoTracking().FirstOrDefaultAsync(c => c.CoachId == id);
+                    if (existingCoach != null)
+                    {
+                        coach.UserId = existingCoach.UserId;
+                    }
                 }
             }
-            else
+            else if (User.IsInRole("Coach"))
             {
                 // Coaches can only edit their own profile
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (coach.UserId != userId)
+                var existingCoach = await _context.Coaches.AsNoTracking().FirstOrDefaultAsync(c => c.CoachId == id);
+                if (existingCoach == null || existingCoach.UserId != userId)
                 {
-                    return Forbid();
+                    return Forbid(); // Coach trying to edit someone else's profile
                 }
+
+                // Preserve the UserId for the coach
+                coach.UserId = existingCoach.UserId;
             }
 
             if (ModelState.IsValid)
@@ -212,15 +220,19 @@ namespace GolfTeamApp.Controllers
                     }
                 }
 
+                // Different redirects based on role
                 if (User.IsInRole("Admin"))
                 {
+                    TempData["Success"] = "Coach profile updated successfully!";
                     return RedirectToAction(nameof(Index));
                 }
                 else
                 {
+                    TempData["Success"] = "Your profile has been updated successfully!";
                     return RedirectToAction("CoachDashboard", "Dashboard");
                 }
             }
+
             return View(coach);
         }
 

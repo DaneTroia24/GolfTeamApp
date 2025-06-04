@@ -179,6 +179,8 @@ namespace GolfTeamApp.Controllers
                 return NotFound();
             }
 
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             // Admin can edit any partner profile
             if (User.IsInRole("Admin"))
             {
@@ -189,13 +191,25 @@ namespace GolfTeamApp.Controllers
                     partner.UserId = existingPartner.UserId;
                 }
             }
-            else
+            else if (User.IsInRole("Partner"))
             {
-                // Only allow partners to edit their own profile (or coaches to edit any)
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (!User.IsInRole("Coach") && partner.UserId != userId)
+                // Partners can only edit their own profile
+                var existingPartner = await _context.Partners.AsNoTracking().FirstOrDefaultAsync(p => p.PartnerId == id);
+                if (existingPartner == null || existingPartner.UserId != userId)
                 {
-                    return Forbid();
+                    return Forbid(); // Partner trying to edit someone else's profile
+                }
+
+                // Preserve the UserId for the partner
+                partner.UserId = existingPartner.UserId;
+            }
+            else if (User.IsInRole("Coach"))
+            {
+                // Coaches can edit any partner but preserve UserId
+                var existingPartner = await _context.Partners.AsNoTracking().FirstOrDefaultAsync(p => p.PartnerId == id);
+                if (existingPartner != null)
+                {
+                    partner.UserId = existingPartner.UserId;
                 }
             }
 
@@ -218,19 +232,24 @@ namespace GolfTeamApp.Controllers
                     }
                 }
 
+                // Different redirects based on role
                 if (User.IsInRole("Admin"))
                 {
+                    TempData["Success"] = "Partner profile updated successfully!";
                     return RedirectToAction(nameof(Index));
                 }
                 else if (User.IsInRole("Partner"))
                 {
+                    TempData["Success"] = "Your profile has been updated successfully!";
                     return RedirectToAction("PartnerDashboard", "Dashboard");
                 }
                 else
                 {
+                    TempData["Success"] = "Partner profile updated successfully!";
                     return RedirectToAction(nameof(Index));
                 }
             }
+
             return View(partner);
         }
 

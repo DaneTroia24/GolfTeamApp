@@ -1,65 +1,119 @@
 ﻿@model IEnumerable<GolfTeamApp.Models.Athlete>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Athletes";
 }
 
-<h1>Index</h1>
+<h1>Athletes</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
+@if (User.IsInRole("Admin") || User.IsInRole("Coach"))
+{
+    <p>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Create New Athlete
+        </a>
+    </p>
+}
+
+<table class="table table-striped">
     <thead>
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.PictureUrl)
+                Picture
             </th>
+            @if (User.IsInRole("Admin") || User.IsInRole("Coach"))
+            {
+                <th>
+                    Swing Rating
+                </th>
+                <th>
+                    Power Rating
+                </th>
+                <th>
+                    Understanding Rating
+                </th>
+            }
             <th>
-                @Html.DisplayNameFor(model => model.SwingRating)
+                Partner
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PowerRating)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UnderstandingRating)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Partner)
-            </th>
-            <th></th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PictureUrl)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SwingRating)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PowerRating)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UnderstandingRating)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Partner.Name)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.AthleteId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.AthleteId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.AthleteId">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @if (!string.IsNullOrEmpty(item.PictureUrl))
+                    {
+                        <img src="@item.PictureUrl" alt="@item.Name" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" />
+                    }
+                    else
+                    {
+                        <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; border-radius: 50%; font-size: 14px;">
+                            @item.Name.Substring(0, 1).ToUpper()
+                        </div>
+                    }
+                </td>
+                @if (User.IsInRole("Admin") || User.IsInRole("Coach"))
+                {
+                    <td>
+                        <span class="badge badge-info">@item.SwingRating/5</span>
+                    </td>
+                    <td>
+                        <span class="badge badge-warning">@item.PowerRating/5</span>
+                    </td>
+                    <td>
+                        <span class="badge badge-success">@item.UnderstandingRating/5</span>
+                    </td>
+                }
+                <td>
+                    @Html.DisplayFor(modelItem => item.Partner.Name)
+                </td>
+                <td>
+                    <!-- Everyone can view details -->
+                    <a asp-action="Details" asp-route-id="@item.AthleteId" class="btn btn-sm btn-outline-info" title="View Details">
+                        <i class="fas fa-eye"></i> Details
+                    </a>
+
+                    <!-- Only Admins and Coaches can edit athletes -->
+                    @if (User.IsInRole("Admin") || User.IsInRole("Coach"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.AthleteId" class="btn btn-sm btn-outline-primary" title="Edit Athlete">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+
+                        <a asp-action="Delete" asp-route-id="@item.AthleteId" class="btn btn-sm btn-outline-danger" title="Delete Athlete"
+                           onclick="return confirm('Are you sure you want to delete this athlete?')">
+                            <i class="fas fa-trash"></i> Delete
+                        </a>
+                    }
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info" role="alert">
+        <h4 class="alert-heading">No Athletes Found</h4>
+        <p>There are currently no athletes in the system.</p>
+        @if (User.IsInRole("Admin") || User.IsInRole("Coach"))
+        {
+            <hr>
+            <p class="mb-0"><a asp-action="Create" class="btn btn-primary">Create the first athlete</a></p>
+        }
+    </div>
+}
+
+@section Scripts {
+    <!-- Font Awesome for icons (if not already included in _Layout.cshtml) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+}

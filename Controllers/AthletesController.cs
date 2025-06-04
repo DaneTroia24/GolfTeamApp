@@ -22,38 +22,12 @@ namespace GolfTeamApp.Controllers
             _context = context;
         }
 
-        // GET: Athletes - Admin, Coach, and Partner can view
+        // GET: Athletes
         [Authorize(Roles = "Admin,Coach,Partner")]
         public async Task<IActionResult> Index()
         {
-            IQueryable<Athlete> athletes;
-
-            if (User.IsInRole("Admin") || User.IsInRole("Coach"))
-            {
-                // Admins and Coaches can see all athletes
-                athletes = _context.Athletes.Include(a => a.Partner);
-            }
-            else if (User.IsInRole("Partner"))
-            {
-                // Partners can only see their assigned athletes
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var partner = await _context.Partners.FirstOrDefaultAsync(p => p.UserId == userId);
-
-                if (partner == null)
-                {
-                    TempData["Error"] = "Partner profile not found.";
-                    return RedirectToAction("Index", "Home");
-                }
-
-                athletes = _context.Athletes
-                    .Include(a => a.Partner)
-                    .Where(a => a.PartnerId == partner.PartnerId);
-            }
-            else
-            {
-                return Forbid();
-            }
-
+            // All roles can see all athletes
+            var athletes = _context.Athletes.Include(a => a.Partner);
             return View(await athletes.ToListAsync());
         }
 
@@ -68,25 +42,19 @@ namespace GolfTeamApp.Controllers
 
             var athlete = await _context.Athletes
                 .Include(a => a.Partner)
+                .Include(a => a.EventScores)
+                    .ThenInclude(es => es.Event)
+                .Include(a => a.EventScores)
+                    .ThenInclude(es => es.EnteredByPartner)
                 .FirstOrDefaultAsync(m => m.AthleteId == id);
+
             if (athlete == null)
             {
                 return NotFound();
             }
 
-            // Admins and Coaches can view any athlete, Partners can only view their assigned athletes
-            if (User.IsInRole("Partner"))
-            {
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var partner = await _context.Partners.FirstOrDefaultAsync(p => p.UserId == userId);
-
-                if (partner == null || athlete.PartnerId != partner.PartnerId)
-                {
-                    return Forbid();
-                }
-            }
-            // If user is Admin or Coach, they can view any athlete (no additional checks needed)
-
+            // All roles can view any athlete details
+            // The view will handle what information is displayed based on role
             return View(athlete);
         }
 
