@@ -276,7 +276,6 @@
             window.URL.revokeObjectURL(url);
         }
 
-        // Add some interactive features
         document.addEventListener('DOMContentLoaded', function () {
             // Highlight table rows on hover
             const rows = document.querySelectorAll('#dataTable tbody tr');
@@ -289,7 +288,6 @@
                 });
             });
 
-            // Add tooltip information
             const badges = document.querySelectorAll('.badge');
             badges.forEach(badge => {
                 badge.style.cursor = 'help';
@@ -331,20 +329,18 @@
             color: #fff !important;
         }
 
-        /* Fix badge text colors for better readability */
         .badge-info {
             color: #fff !important;
         }
 
         .badge-warning {
-            color: #212529 !important; /* Dark text on yellow background */
+            color: #212529 !important;
         }
 
         .badge-success {
             color: #fff !important;
         }
 
-        /* Improve readability for alternating columns */
         #dataTable td:nth-child(odd) {
             background-color: rgba(0,0,0,0.02);
         }
@@ -360,7 +356,6 @@
             }
         }
 
-        /* Additional styles to ensure proper table display */
         .table-bordered th,
         .table-bordered td {
             border: 1px solid #dee2e6 !important;
