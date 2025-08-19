@@ -37,7 +37,7 @@ namespace GolfTeamApp.Controllers
             return View(await _context.Coaches.ToListAsync());
         }
 
-        // GET: Coaches/Details/5 - Admin and Coach can view details
+        // GET: Coaches/Details - Admin and Coach can view details
         [Authorize(Roles = "Admin,Coach,Partner")]
         public async Task<IActionResult> Details(int? id)
         {
@@ -92,7 +92,6 @@ namespace GolfTeamApp.Controllers
                 if (User.IsInRole("Admin"))
                 {
                     // Admin is creating a coach profile for someone else
-                    // DO NOT link to admin's user account
                     _context.Add(coach);
                     await _context.SaveChangesAsync();
 
@@ -102,7 +101,7 @@ namespace GolfTeamApp.Controllers
                 else
                 {
                     // User is creating their own coach profile
-                    coach.UserId = userId; // CRITICAL: Link the profile to the user
+                    coach.UserId = userId;
                     _context.Add(coach);
                     await _context.SaveChangesAsync();
 
@@ -131,7 +130,7 @@ namespace GolfTeamApp.Controllers
             return View(coach);
         }
 
-        // GET: Coaches/Edit/5 - Only Admin can edit ANY coach, Coaches can edit their OWN
+        // GET: Coaches/Edit - Only Admin can edit ANY coach, Coaches can edit their OWN
         [Authorize(Roles = "Admin,Coach")]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -162,7 +161,7 @@ namespace GolfTeamApp.Controllers
             return View(coach);
         }
 
-        // POST: Coaches/Edit/5
+        // POST: Coaches/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Coach")]
@@ -236,7 +235,7 @@ namespace GolfTeamApp.Controllers
             return View(coach);
         }
 
-        // GET: Coaches/Delete/5 - Only Admin can delete coaches
+        // GET: Coaches/Delete - Only Admin can delete coaches
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -255,7 +254,7 @@ namespace GolfTeamApp.Controllers
             return View(coach);
         }
 
-        // POST: Coaches/Delete/5 - Only Admin can delete coaches
+        // POST: Coaches/Delete - Only Admin can delete coaches
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
