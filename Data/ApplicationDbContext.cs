@@ -21,11 +21,10 @@ namespace GolfTeamApp.Data
         {
             base.OnModelCreating(builder);
 
-            // Explicitly define primary key for EventScore
+            // Define primary key for EventScore
             builder.Entity<EventScore>()
                 .HasKey(es => es.ScoreId);
 
-            // Configure relationships with specific cascade behaviors
             builder.Entity<Athlete>()
                 .HasOne(a => a.Partner)
                 .WithMany(p => p.Athletes)
