@@ -25,7 +25,7 @@ namespace GolfTeamApp.Models
         public int PartnerId { get; set; }
         public Partner? Partner { get; set; }
 
-        // Link to Identity User (optional - athletes might not have login accounts)
+        // Link to Identity User
         public string? UserId { get; set; }  // Links to AspNetUsers table
 
         // Navigation property
