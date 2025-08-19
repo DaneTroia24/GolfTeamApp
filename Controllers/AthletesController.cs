@@ -31,7 +31,7 @@ namespace GolfTeamApp.Controllers
             return View(await athletes.ToListAsync());
         }
 
-        // GET: Athletes/Details/5 - Admin, Coach, and Partner can view
+        // GET: Athletes/Details - Admin, Coach, and Partner can view
         [Authorize(Roles = "Admin,Coach,Partner")]
         public async Task<IActionResult> Details(int? id)
         {
@@ -82,7 +82,7 @@ namespace GolfTeamApp.Controllers
             return View(athlete);
         }
 
-        // GET: Athletes/Edit/5 - Admin, Coach, and Partner can edit
+        // GET: Athletes/Edit - Admin, Coach, and Partner can edit
         [Authorize(Roles = "Admin,Coach,Partner")]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -122,7 +122,7 @@ namespace GolfTeamApp.Controllers
             return View(athlete);
         }
 
-        // POST: Athletes/Edit/5 - Admin, Coach, and Partner can edit
+        // POST: Athletes/Edit - Admin, Coach, and Partner can edit
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Coach,Partner")]
@@ -145,7 +145,6 @@ namespace GolfTeamApp.Controllers
                     return Forbid();
                 }
 
-                // For partners, preserve certain fields that they shouldn't change
                 var existingAthlete = await _context.Athletes.AsNoTracking().FirstOrDefaultAsync(a => a.AthleteId == id);
                 if (existingAthlete != null)
                 {
