@@ -48,7 +48,7 @@ namespace GolfTeamApp.Controllers
                     return RedirectToAction("Index", "Home");
                 }
 
-                // FIXED: Only show scores for athletes assigned to this partner
+                // Only show scores for athletes assigned to this partner
                 eventScores = _context.EventScores
                     .Include(e => e.Athlete)
                     .Include(e => e.EnteredByPartner)
@@ -63,7 +63,7 @@ namespace GolfTeamApp.Controllers
             return View(await eventScores.OrderByDescending(es => es.Event.EventDate).ThenBy(es => es.Athlete.Name).ToListAsync());
         }
 
-        // GET: EventScores/Details/5 - Admin, Coach, and Partner can view
+        // GET: EventScores/Details - Admin, Coach, and Partner can view
         [Authorize(Roles = "Admin,Coach,Partner")]
         public async Task<IActionResult> Details(int? id)
         {
@@ -178,7 +178,7 @@ namespace GolfTeamApp.Controllers
             return View(eventScore);
         }
 
-        // GET: EventScores/Edit/5 - Admin, Coach, and Partner can edit
+        // GET: EventScores/Edit - Admin, Coach, and Partner can edit
         [Authorize(Roles = "Admin,Coach,Partner")]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -213,7 +213,7 @@ namespace GolfTeamApp.Controllers
             return View(eventScore);
         }
 
-        // POST: EventScores/Edit/5 - Admin, Coach, and Partner can edit
+        // POST: EventScores/Edit - Admin, Coach, and Partner can edit
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Coach,Partner")]
@@ -276,7 +276,7 @@ namespace GolfTeamApp.Controllers
             return View(eventScore);
         }
 
-        // GET: EventScores/Delete/5 - Only Admin and Coach can delete
+        // GET: EventScores/Delete - Only Admin and Coach can delete
         [Authorize(Roles = "Admin,Coach")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -298,7 +298,7 @@ namespace GolfTeamApp.Controllers
             return View(eventScore);
         }
 
-        // POST: EventScores/Delete/5 - Only Admin and Coach can delete
+        // POST: EventScores/Delete - Only Admin and Coach can delete
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Coach")]
