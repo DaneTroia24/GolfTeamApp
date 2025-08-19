@@ -30,7 +30,7 @@ namespace GolfTeamApp.Controllers
             return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: GolfEvents/Details/5 - Everyone can view event details
+        // GET: GolfEvents/Details - Everyone can view event details
         [Authorize(Roles = "Admin,Coach,Partner,Athlete")]
         public async Task<IActionResult> Details(int? id)
         {
@@ -104,7 +104,7 @@ namespace GolfTeamApp.Controllers
             return View(golfEvent);
         }
 
-        // GET: GolfEvents/Edit/5 - Only Admin and Coach can edit events
+        // GET: GolfEvents/Edit - Only Admin and Coach can edit events
         [Authorize(Roles = "Admin,Coach")]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -135,7 +135,7 @@ namespace GolfTeamApp.Controllers
             return View(golfEvent);
         }
 
-        // POST: GolfEvents/Edit/5
+        // POST: GolfEvents/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Coach")]
@@ -146,7 +146,6 @@ namespace GolfTeamApp.Controllers
                 return NotFound();
             }
 
-            // Server-side validation for times
             if (golfEvent.EndTime <= golfEvent.StartTime)
             {
                 ModelState.AddModelError("EndTime", "End time must be after start time.");
@@ -160,7 +159,7 @@ namespace GolfTeamApp.Controllers
 
                 if (coach == null || golfEvent.CreatedByCoachId != coach.CoachId)
                 {
-                    return Forbid(); // Coach can only edit their own events
+                    return Forbid();
                 }
             }
 
@@ -190,7 +189,7 @@ namespace GolfTeamApp.Controllers
             return View(golfEvent);
         }
 
-        // GET: GolfEvents/Delete/5 - Only Admin and Coach can delete events
+        // GET: GolfEvents/Delete - Only Admin and Coach can delete events
         [Authorize(Roles = "Admin,Coach")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -222,7 +221,7 @@ namespace GolfTeamApp.Controllers
             return View(golfEvent);
         }
 
-        // POST: GolfEvents/Delete/5 - Only Admin and Coach can delete events
+        // POST: GolfEvents/Delete - Only Admin and Coach can delete events
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Coach")]
@@ -239,7 +238,7 @@ namespace GolfTeamApp.Controllers
 
                     if (coach == null || golfEvent.CreatedByCoachId != coach.CoachId)
                     {
-                        return Forbid(); // Coach can only delete their own events
+                        return Forbid();
                     }
                 }
 
