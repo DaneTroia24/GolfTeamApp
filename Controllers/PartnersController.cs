@@ -38,7 +38,7 @@ namespace GolfTeamApp.Controllers
             return View(await _context.Partners.ToListAsync());
         }
 
-        // GET: Partners/Details/5 - Admin, Coach, and Partner can view details
+        // GET: Partners/Details - Admin, Coach, and Partner can view details
         [Authorize(Roles = "Admin,Coach,Partner")]
         public async Task<IActionResult> Details(int? id)
         {
@@ -93,10 +93,6 @@ namespace GolfTeamApp.Controllers
                 // Determine if this is a self-registration or admin/coach creating for someone else
                 if (User.IsInRole("Admin") || User.IsInRole("Coach"))
                 {
-                    // Admin or Coach is creating a partner profile for someone else
-                    // DO NOT link to the admin's/coach's user account
-                    // DO NOT assign Partner role to the admin/coach
-
                     _context.Add(partner);
                     await _context.SaveChangesAsync();
 
@@ -108,7 +104,7 @@ namespace GolfTeamApp.Controllers
                     // User is creating their own partner profile
                     // Link to their user account and assign the Partner role
 
-                    partner.UserId = userId; // CRITICAL: Link the profile to the user
+                    partner.UserId = userId;
                     _context.Add(partner);
                     await _context.SaveChangesAsync();
 
@@ -137,7 +133,7 @@ namespace GolfTeamApp.Controllers
             return View(partner);
         }
 
-        // GET: Partners/Edit/5 - Admin can edit any, Coach and Partner can edit their own
+        // GET: Partners/Edit - Admin can edit any, Coach and Partner can edit their own
         [Authorize(Roles = "Admin,Coach,Partner")]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -168,7 +164,7 @@ namespace GolfTeamApp.Controllers
             return View(partner);
         }
 
-        // POST: Partners/Edit/5
+        // POST: Partners/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Coach,Partner")]
@@ -253,7 +249,7 @@ namespace GolfTeamApp.Controllers
             return View(partner);
         }
 
-        // GET: Partners/Delete/5 - Only Admin can delete partners
+        // GET: Partners/Delete - Only Admin can delete partners
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -272,7 +268,7 @@ namespace GolfTeamApp.Controllers
             return View(partner);
         }
 
-        // POST: Partners/Delete/5 - Only Admin can delete partners
+        // POST: Partners/Delete - Only Admin can delete partners
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
