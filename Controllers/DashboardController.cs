@@ -115,7 +115,7 @@ namespace GolfTeamApp.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AdminDashboard()
         {
-            // Get comprehensive system statistics
+            // Get system statistics
             ViewBag.TotalAthletes = await _context.Athletes.CountAsync();
             ViewBag.TotalEvents = await _context.GolfEvents.CountAsync();
             ViewBag.TotalScores = await _context.EventScores.CountAsync();
