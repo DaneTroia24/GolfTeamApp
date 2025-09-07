@@ -192,7 +192,7 @@ namespace GolfTeamApp.Controllers
             return View(athlete);
         }
 
-        // GET: Athletes/Delete/5 - Only Admin and Coach can delete athletes
+        // GET: Athletes/Delete/5 - Only Admin and Coach can get athletes
         [Authorize(Roles = "Admin,Coach")]
         public async Task<IActionResult> Delete(int? id)
         {
